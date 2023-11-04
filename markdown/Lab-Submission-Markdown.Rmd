@@ -18,7 +18,7 @@ editor_options:
 # Student Details
 
 |                                            |                                    |
-|--------------------------------------------|----------------------------|
+|--------------------------------------------|------------------------------------|
 | *Student ID Number*                        | 135129,122147,120578,121774,121619 |
 | *Student Name*                             | Avengers                           |
 | *BBIT 4.2 Group*                           | B                                  |
@@ -54,7 +54,7 @@ retail_train <- retail[train_index, ]
 retail_test <- retail[-train_index, ]
 ```
 
-```{}
+```         
 ```
 
 \### Handle missing values \-\-\--
@@ -115,4 +115,13 @@ dim(retail_removed_obs)
 
 ```{r}
 any_na(retail_removed_obs)
+```
+
+```{r}
+set.seed(7)
+train_control <- trainControl(method = "cv", number = 5)
+retail_removed_obs_caret_model_lm <- train(UnitPrice ~ ., data = retail_removed_obs_train,
+                                       method = "lm", metric = "RMSE",
+                                       preProcess = c("center", "scale"),
+                                       trControl = train_control)
 ```
