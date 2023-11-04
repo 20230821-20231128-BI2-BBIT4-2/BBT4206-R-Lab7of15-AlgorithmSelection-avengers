@@ -238,3 +238,22 @@ Make predictions
 ```{r}
 predictions <- predict(affairs_model_glm, x, type = "link")
 ```
+
+Regularized Linear Regression Classification Problem with CARET
+Load and split the dataset
+
+```{r}
+data(affairs)
+```
+
+Define a 70:30 train:test data split of the dataset
+
+```{r}
+train_index <- createDataPartition(Affairs$children,
+                                   p = 0.7,
+                                   list = FALSE)
+affairs_train <- Affairs[train_index, ]
+affairs_test <- Affairs[-train_index, ]
+```
+
+
