@@ -54,64 +54,60 @@ retail_train <- retail[train_index, ]
 retail_test <- retail[-train_index, ]
 ```
 
-```{}
+```         
 ```
 
-\### Handle missing values \-\-\--
+# Handle missing values
 
-\# Are there missing values in the dataset?
+## Are there missing values in the dataset?
 
 ```{r}
 any_na(retail)
 ```
 
-\# How many?
+## How many?
 
 ```{r}
 n_miss(retail)
 ```
 
-\# What is the proportion of missing data in the entire dataset?
+## What is the proportion of missing data in the entire dataset?
 
 ```{r}
 prop_miss(retail)
 ```
 
-\# What is the number and percentage of missing values grouped by
-
-\# each variable?
+## What is the number and percentage of missing values grouped by each variable?
 
 ```{r}
 miss_var_summary(retail)
 ```
 
-\# Which variables contain the most missing values?
+## Which variables contain the most missing values?
 
 ```{r}
 gg_miss_var(retail)
 ```
 
-\# Which combinations of variables are missing together?
+## Which combinations of variables are missing together?
 
 ```{r}
 gg_miss_upset(retail)
 ```
 
-\#### OPTION 1: Remove the observations with missing values \-\-\--
+## Remove the observations with missing values 
 
 ```{r}
 retail_removed_obs <- retail %>% filter(complete.cases(.))
 ```
 
-\# We end up with 406,829 observations to create the association rules
-
-\# instead of the initial 541,909 observations.
+## We end up with 406,829 observations to create the association rules instead of the initial 541,909 observations.
 
 ```{r}
 dim(retail_removed_obs)
 ```
 
-\# Are there missing values in the dataset?
+## Are there missing values in the dataset?
 
 ```{r}
 any_na(retail_removed_obs)
