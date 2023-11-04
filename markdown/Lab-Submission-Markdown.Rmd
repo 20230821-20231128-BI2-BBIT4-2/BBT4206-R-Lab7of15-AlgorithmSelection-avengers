@@ -225,3 +225,16 @@ Regularized Linear Regression Classification Problem without CARET
 x <- as.matrix(Affairs[, 1:9])
 y <- as.matrix(Affairs[, 9])
 ```
+
+Display the model's details
+
+```{r}
+print(affairs_model_glm)
+
+```
+
+Make predictions
+
+```{r}
+predictions <- predict(affairs_model_glm, x, type = "link")
+```
