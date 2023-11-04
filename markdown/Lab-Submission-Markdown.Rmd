@@ -55,7 +55,7 @@ affairs_train <- Affairs[train_index, ]
 affairs_test <- Affairs[-train_index, ]
 ```
 
-Train the model
+## Train the model
 
 ```{r}
 set.seed(7)
@@ -69,21 +69,21 @@ affairs_caret_model_lm <- train(age ~ ., data = affairs_train,
 
 ```
 
-Display the model's details
+## Display the model's details
 
 ```{r}
 print(affairs_caret_model_lm)
 
 ```
 
-Make predictions
+## Make predictions
 
 ```{r}
 predictions <- predict(affairs_caret_model_lm,
                        affairs_test[, 1:9])
 ```
 
-Display the model's evaluation metrics
+## Display the model's evaluation metrics
 
 ```{r}
 rmse <- sqrt(mean((affairs_test$age - predictions)^2))
@@ -91,7 +91,7 @@ print(paste("RMSE =", sprintf(rmse, fmt = "%#.4f")))
 
 ```
 
-SSR
+## SSR
 
 ```{r}
 ssr <- sum((affairs_test$age - predictions)^2)
@@ -99,21 +99,21 @@ print(paste("SSR =", sprintf(ssr, fmt = "%#.4f")))
 
 ```
 
-SST
+## SST
 
 ```{r}
 sst <- sum((affairs_test$age - mean(affairs_test$age))^2)
 print(paste("SST =", sprintf(sst, fmt = "%#.4f")))
 ```
 
-R Squared
+## R Squared
 
 ```{r}
 r_squared <- 1 - (ssr / sst)
 print(paste("R Squared =", sprintf(r_squared, fmt = "%#.4f")))
 ```
 
-MAE
+## MAE
 
 ```{r}
 absolute_errors <- abs(predictions - affairs_test$age)
@@ -121,9 +121,9 @@ mae <- mean(absolute_errors)
 print(paste("MAE =", sprintf(mae, fmt = "%#.4f")))
 ```
 
-Logistic Regression
+## Logistic Regression
 
-Train the model
+## Train the model
 
 ```{r}
 affairs_model_glm <- glm(children ~ ., data = affairs_train,
@@ -131,13 +131,13 @@ affairs_model_glm <- glm(children ~ ., data = affairs_train,
 
 ```
 
-Display the model's details
+## Display the model's details
 
 ```{r}
 print(affairs_model_glm)
 ```
 
-Make predictions
+## Make predictions
 
 ```{r}
 probabilities <- predict(affairs_model_glm, affairs_test[, 1:9],
@@ -147,13 +147,13 @@ predictions <- ifelse(probabilities > 0.5, "pos", "neg")
 print(predictions)
 ```
 
-Display the model's evaluation metrics
+## Display the model's evaluation metrics
 
 ```{r}
 table(predictions, affairs_test$children)
 ```
 
-Logistic Regression with caret
+## Logistic Regression with caret
 
 ```{r}
 train_control_reg <- trainControl(method = "cv", number = 5)
@@ -165,14 +165,14 @@ affairs_caret_model_logistic <-
 print(affairs_caret_model_logistic)
 ```
 
-Make predictions
+## Make predictions
 
 ```{r}
 predictions <- predict(affairs_caret_model_logistic,
                        affairs_test[, 1:9])
 ```
 
-Display the model's evaluation metrics
+## Display the model's evaluation metrics
 
 ```{r}
 confusion_matrix <-
@@ -185,9 +185,9 @@ fourfoldplot(as.table(confusion_matrix), color = c("grey", "lightblue"),
 
 ```
 
-Linear Discriminant Analysis with caret
+## Linear Discriminant Analysis with caret
 
-Train the model
+## Train the model
 
 ```{r}
 set.seed(7)
@@ -200,14 +200,14 @@ affairs_caret_model_lda <- train(children ~ .,
 print(affairs_caret_model_lda)
 ```
 
-Make predictions
+## Make predictions
 
 ```{r}
 predictions <- predict(affairs_caret_model_lda,
                        affairs_test[, 1:9])
 ```
 
-Display the model's evaluation metrics
+## Display the model's evaluation metrics
 
 ```{r}
 confusion_matrix <-
@@ -219,34 +219,33 @@ fourfoldplot(as.table(confusion_matrix), color = c("grey", "lightblue"),
              main = "Confusion Matrix")
 ```
 
-Regularized Linear Regression Classification Problem without CARET
+## Regularized Linear Regression Classification Problem without CARET
 
 ```{r}
 x <- as.matrix(Affairs[, 1:9])
 y <- as.matrix(Affairs[, 9])
 ```
 
-Display the model's details
+## Display the model's details
 
 ```{r}
 print(affairs_model_glm)
 
 ```
 
-Make predictions
+## Make predictions
 
 ```{r}
 predictions <- predict(affairs_model_glm, x, type = "link")
 ```
 
-Regularized Linear Regression Classification Problem with CARET
-Load and split the dataset
+## Regularized Linear Regression Classification Problem with CARET Load and split the dataset
 
 ```{r}
 data(affairs)
 ```
 
-Define a 70:30 train:test data split of the dataset
+## Define a 70:30 train:test data split of the dataset
 
 ```{r}
 train_index <- createDataPartition(Affairs$children,
@@ -255,5 +254,3 @@ train_index <- createDataPartition(Affairs$children,
 affairs_train <- Affairs[train_index, ]
 affairs_test <- Affairs[-train_index, ]
 ```
-
-
