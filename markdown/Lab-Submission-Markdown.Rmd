@@ -18,7 +18,7 @@ editor_options:
 # Student Details
 
 |                                            |                                    |
-|--------------------------------------------|------------------------------------|
+|--------------------------------------------|----------------------------|
 | *Student ID Number*                        | 135129,122147,120578,121774,121619 |
 | *Student Name*                             | Avengers                           |
 | *BBIT 4.2 Group*                           | B                                  |
@@ -40,84 +40,188 @@ warning = FALSE, collapse = FALSE )
 # Load and split the dataset
 
 ```{r}
-retail <- read_excel("data/Online Retail.xlsx")
-dim(retail)
+library(AER)
+data("Affairs")
 ```
 
 # Test data split of the dataset
 
 ```{r}
-train_index <- createDataPartition(retail$UnitPrice,
+library(caret)
+train_index <- createDataPartition(Affairs$age,
                                    p = 0.8,
                                    list = FALSE)
-retail_train <- retail[train_index, ]
-retail_test <- retail[-train_index, ]
+affairs_train <- Affairs[train_index, ]
+affairs_test <- Affairs[-train_index, ]
 ```
 
-```         
-```
-
-# Handle missing values
-
-## Are there missing values in the dataset?
-
-```{r}
-any_na(retail)
-```
-
-## How many?
-
-```{r}
-n_miss(retail)
-```
-
-## What is the proportion of missing data in the entire dataset?
-
-```{r}
-prop_miss(retail)
-```
-
-## What is the number and percentage of missing values grouped by each variable?
-
-```{r}
-miss_var_summary(retail)
-```
-
-## Which variables contain the most missing values?
-
-```{r}
-gg_miss_var(retail)
-```
-
-## Which combinations of variables are missing together?
-
-```{r}
-gg_miss_upset(retail)
-```
-
-## Remove the observations with missing values 
-
-```{r}
-retail_removed_obs <- retail %>% filter(complete.cases(.))
-```
-
-## We end up with 406,829 observations to create the association rules instead of the initial 541,909 observations.
-
-```{r}
-dim(retail_removed_obs)
-```
-
-## Are there missing values in the dataset?
-
-```{r}
-any_na(retail_removed_obs)
-```
+Train the model
 
 ```{r}
 set.seed(7)
 train_control <- trainControl(method = "cv", number = 5)
-retail_removed_obs_caret_model_lm <- train(UnitPrice ~ ., data = retail_removed_obs_train,
+affairs_caret_model_lm <- train(age ~ ., data = affairs_train,
                                        method = "lm", metric = "RMSE",
                                        preProcess = c("center", "scale"),
                                        trControl = train_control)
+
+
+
+```
+
+Display the model's details
+
+```{r}
+print(affairs_caret_model_lm)
+
+```
+
+Make predictions
+
+```{r}
+predictions <- predict(affairs_caret_model_lm,
+                       affairs_test[, 1:9])
+```
+
+Display the model's evaluation metrics
+
+```{r}
+rmse <- sqrt(mean((affairs_test$age - predictions)^2))
+print(paste("RMSE =", sprintf(rmse, fmt = "%#.4f")))
+
+```
+
+SSR
+
+```{r}
+ssr <- sum((affairs_test$age - predictions)^2)
+print(paste("SSR =", sprintf(ssr, fmt = "%#.4f")))
+
+```
+
+SST
+
+```{r}
+sst <- sum((affairs_test$age - mean(affairs_test$age))^2)
+print(paste("SST =", sprintf(sst, fmt = "%#.4f")))
+```
+
+R Squared
+
+```{r}
+r_squared <- 1 - (ssr / sst)
+print(paste("R Squared =", sprintf(r_squared, fmt = "%#.4f")))
+```
+
+MAE
+
+```{r}
+absolute_errors <- abs(predictions - affairs_test$age)
+mae <- mean(absolute_errors)
+print(paste("MAE =", sprintf(mae, fmt = "%#.4f")))
+```
+
+Logistic Regression
+
+Train the model
+
+```{r}
+affairs_model_glm <- glm(children ~ ., data = affairs_train,
+                          family = binomial(link = "logit"))
+
+```
+
+Display the model's details
+
+```{r}
+print(affairs_model_glm)
+```
+
+Make predictions
+
+```{r}
+probabilities <- predict(affairs_model_glm, affairs_test[, 1:9],
+                         type = "response")
+print(probabilities)
+predictions <- ifelse(probabilities > 0.5, "pos", "neg")
+print(predictions)
+```
+
+Display the model's evaluation metrics
+
+```{r}
+table(predictions, affairs_test$children)
+```
+
+Logistic Regression with caret
+
+```{r}
+train_control_reg <- trainControl(method = "cv", number = 5)
+set.seed(7)
+affairs_caret_model_logistic <-
+  train(children ~ ., data = affairs_train,
+        method = "regLogistic", metric = "Accuracy",
+        preProcess = c("center", "scale"), trControl = train_control)
+print(affairs_caret_model_logistic)
+```
+
+Make predictions
+
+```{r}
+predictions <- predict(affairs_caret_model_logistic,
+                       affairs_test[, 1:9])
+```
+
+Display the model's evaluation metrics
+
+```{r}
+confusion_matrix <-
+  caret::confusionMatrix(predictions,
+                         affairs_test[, 1:9]$children)
+print(confusion_matrix)
+
+fourfoldplot(as.table(confusion_matrix), color = c("grey", "lightblue"),
+             main = "Confusion Matrix")
+
+```
+
+Linear Discriminant Analysis with caret
+
+Train the model
+
+```{r}
+set.seed(7)
+train_control <- trainControl(method = "LOOCV")
+affairs_caret_model_lda <- train(children ~ .,
+                                  data = affairs_train,
+                                  method = "lda", metric = "Accuracy",
+                                  preProcess = c("center", "scale"),
+                                  trControl = train_control)
+print(affairs_caret_model_lda)
+```
+
+Make predictions
+
+```{r}
+predictions <- predict(affairs_caret_model_lda,
+                       affairs_test[, 1:9])
+```
+
+Display the model's evaluation metrics
+
+```{r}
+confusion_matrix <-
+  caret::confusionMatrix(predictions,
+                         affairs_test[, 1:9]$children)
+print(confusion_matrix)
+
+fourfoldplot(as.table(confusion_matrix), color = c("grey", "lightblue"),
+             main = "Confusion Matrix")
+```
+
+Regularized Linear Regression Classification Problem without CARET
+
+```{r}
+x <- as.matrix(Affairs[, 1:9])
+y <- as.matrix(Affairs[, 9])
 ```
