@@ -34,3 +34,15 @@ knitr::opts_chunk$set(
   warning = FALSE,
   collapse = FALSE
 )
+```{r}
+retail <- read_excel("data/Online Retail.xlsx")
+dim(retail)
+```
+```{r}
+train_index <- createDataPartition(retail$UnitPrice,
+                                   p = 0.8,
+                                   list = FALSE)
+retail_train <- retail[train_index, ]
+retail_test <- retail[-train_index, ]
+```
+
